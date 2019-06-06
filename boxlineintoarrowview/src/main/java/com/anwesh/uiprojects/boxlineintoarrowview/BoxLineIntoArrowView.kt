@@ -21,6 +21,7 @@ val strokeFactor : Int = 90
 val sizeFactor : Float = 2.9f
 val foreColor : Int = Color.parseColor("#4527A0")
 val backColor : Int = Color.parseColor("#BDBDBD")
+val lineFactor : Float = 2.5f
 
 fun Int.inverse() : Float = 1f / this
 fun Float.scaleFactor() : Float = Math.floor(this / scDiv).toFloat()
@@ -31,3 +32,35 @@ fun Float.mirrorValue(a : Int, b : Int) : Float {
     return (1 - k) * a.inverse() + k * b.inverse()
 }
 fun Float.updateValue(dir : Float, a : Int, b : Int) = mirrorValue(a, b) * dir * scGap
+
+fun Canvas.drawLineIntoArrow(i : Int, size : Float, sc1 : Float, sc2 : Float, paint : Paint) {
+    val sc1i : Float = sc1.divideScale(i, lines)
+    val sc2i : Float = sc2.divideScale(i, lines)
+    val lineSize : Float = size / lineFactor
+    val sf : Float = 1f - 2 * i
+    for (j in 0..(lines - 1)) {
+        save()
+        translate((2 * size - lineSize) * (1 - sc1i) * sf, 0f)
+        rotate(45f * (1 - 2 *j) * sc2i.divideScale(j, lines))
+        drawLine(0f, 0f, lineSize * sf, 0f, paint)
+        restore()
+    }
+}
+
+fun Canvas.drawLIANode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val gap : Float = h / (nodes + 1)
+    val size : Float = gap / sizeFactor
+    val sc1 : Float = scale.divideScale(0, 2)
+    val sc2 : Float = scale.divideScale(1, 2)
+    paint.color = foreColor
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
+    paint.strokeCap = Paint.Cap.ROUND
+    save()
+    translate(w / 2, gap * (i + 1))
+    for (j in 0..(lines - 1)) {
+        drawLineIntoArrow(i, size, sc1, sc2, paint)
+    }
+    restore()
+}
