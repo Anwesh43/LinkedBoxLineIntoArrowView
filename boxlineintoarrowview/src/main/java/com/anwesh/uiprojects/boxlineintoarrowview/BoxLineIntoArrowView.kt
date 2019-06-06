@@ -197,4 +197,25 @@ class BoxLineIntoArrowView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : BoxLineIntoArrowView) {
+
+        private val animator : Animator = Animator(view)
+        private val bla : BoxLineIntoArrow = BoxLineIntoArrow(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            bla.draw(canvas, paint)
+            animator.animate {
+                bla.update {i, scl ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            bla.startUpdating {
+                animator.stop()
+            }
+        }
+    }
 }
