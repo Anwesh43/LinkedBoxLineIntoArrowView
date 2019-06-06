@@ -218,4 +218,13 @@ class BoxLineIntoArrowView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : BoxLineIntoArrowView {
+            val view : BoxLineIntoArrowView = BoxLineIntoArrowView(activity)
+            activity.setContentView(view)
+            return view 
+        }
+    }
 }
