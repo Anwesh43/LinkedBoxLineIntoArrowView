@@ -22,6 +22,9 @@ val sizeFactor : Float = 2.9f
 val foreColor : Int = Color.parseColor("#4527A0")
 val backColor : Int = Color.parseColor("#BDBDBD")
 val lineFactor : Float = 2.5f
+val rWFactor : Float = 2f
+val rHFactor : Float = 2f
+val delay : Long = 20
 
 fun Int.inverse() : Float = 1f / this
 fun Float.scaleFactor() : Float = Math.floor(this / scDiv).toFloat()
@@ -40,7 +43,7 @@ fun Canvas.drawLineIntoArrow(i : Int, size : Float, sc1 : Float, sc2 : Float, pa
     val sf : Float = 1f - 2 * i
     for (j in 0..(lines - 1)) {
         save()
-        translate((2 * size - lineSize) * (1 - sc1i) * sf, 0f)
+        translate((rWFactor * size - lineSize) * (1 - sc1i) * sf, 0f)
         rotate(45f * (1 - 2 *j) * sc2i.divideScale(j, lines))
         drawLine(0f, 0f, lineSize * sf, 0f, paint)
         restore()
@@ -57,10 +60,12 @@ fun Canvas.drawLIANode(i : Int, scale : Float, paint : Paint) {
     paint.color = foreColor
     paint.strokeWidth = Math.min(w, h) / strokeFactor
     paint.strokeCap = Paint.Cap.ROUND
+    paint.style = Paint.Style.STROKE
     save()
     translate(w / 2, gap * (i + 1))
+    drawRect(RectF(-rWFactor * size, -size / rHFactor, rWFactor * size, size / rHFactor), paint)
     for (j in 0..(lines - 1)) {
-        drawLineIntoArrow(i, size, sc1, sc2, paint)
+        drawLineIntoArrow(j, size, sc1, sc2, paint)
     }
     restore()
 }
@@ -109,7 +114,7 @@ class BoxLineIntoArrowView(ctx : Context) : View(ctx) {
             if (animated) {
                 cb()
                 try {
-                    Thread.sleep(50)
+                    Thread.sleep(delay)
                     view.invalidate()
                 } catch(ex : Exception) {
 
@@ -215,7 +220,7 @@ class BoxLineIntoArrowView(ctx : Context) : View(ctx) {
 
         fun handleTap() {
             bla.startUpdating {
-                animator.stop()
+                animator.start()
             }
         }
     }
